@@ -1,0 +1,97 @@
+<!--results.html shows the search result for patient details-->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+<link rel="stylesheet" href="../static/basic.css">
+
+<div>
+    <ul class="nav nav-pills justify-content-end">
+        <li class="nav-item">
+            <a class="nav-link" href="http://localhost:5000/home"><h5>Home</h5></a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="http://localhost:5000/monitor_manager"><h5>Monitor</h5></a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="http://localhost:5000"><h5>Log Out</h5></a>
+        </li>
+    </ul>
+</div>
+
+<div id="results">
+    <div class="align-items-center">
+        <h2>Patient Details</h2>
+
+        <div id="table">
+            <table class="table table-hover" style="width: 95%;">
+                <thead>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th style="text-align: center;">Patient ID</th>
+                        <td style="text-align: center;">{{ patient['Patient_ID'] }}</td>
+                    </tr>
+                    <tr>
+                        <th style="text-align: center;">First Name</th>
+                        <td style="text-align: center;">{{ patient['Name'] }}</td>
+                    </tr>
+                    <tr>
+                        <th style="text-align: center;">Surname</th>
+                        <td style="text-align: center;">{{ patient['Surname'] }}</td>
+                    </tr>
+                    <tr>
+                        <th style="text-align: center;">Birth Date</th>
+                        <td style="text-align: center;">{{ patient['Birthday'] }}</td>
+                    </tr>
+                    <tr>
+                        <th style="text-align: center;">Age</th>
+                        <td style="text-align: center;">{{ patient['Age'] }}</td>
+                    </tr>
+                    <tr>
+                        <th style="text-align: center;">Gender</th>
+                        <td style="text-align: center;">{{ patient['Gender'] }}</td>
+                    </tr>
+                    <tr>
+                        <th style="text-align: center;">Gender</th>
+                        <td style="text-align: center;">{{ patient['Marital_Status'] }}</td>
+                    </tr>
+                    <tr>
+                        <th style="text-align: center;">City</th>
+                        <td style="text-align: center;">{{ patient['City'] }}</td>
+                    </tr>
+                    <tr>
+                        <th style="text-align: center;">State</th>
+                        <td style="text-align: center;">{{ patient['State'] }}</td>
+                    </tr>
+                    <tr>
+                        <th style="text-align: center;">Country</th>
+                        <td style="text-align: center;">{{ patient['Country'] }}</td>
+                    </tr>
+                    <tr>
+                        <th style="text-align: center;">Race</th>
+                        <td style="text-align: center;">{{ patient['Race'] }}</td>
+                    </tr>
+                    <tr>
+                        <th style="text-align: center;">Ethnicity</th>
+                        <td style="text-align: center;">{{ patient['Ethnicity'] }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        {% if level == 'na' %}
+            <div>
+                <input type="button" value="Cholesterol Level" class="btn btn-primary" onclick="ml('{{ patient.Patient_ID }}')">
+            </div>
+        {% else %}
+            <div>
+                <h5>Cholesterol Level is: {{ level }}</h5>
+                <br>
+                <h5>With accuracy: {{ score * 100 }}%</h5>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script type="text/javascript" src="../static/basic.js"></script>
+<script type="text/javascript" src="../static/results.js"></script>
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>

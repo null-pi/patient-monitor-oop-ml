@@ -1,0 +1,104 @@
+<!--home.htm makes the front end of the home page of the website-->
+<!--The page shows the list of patients of the health practitioner and allows for creating monitor manager and choosing frequency time-->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+<link rel="stylesheet" href="../static/basic.css">
+
+{% if alert == 'alert' %}
+<div class="alert">
+    <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span> 
+    <strong><h5>Monitor should be created at first</h5></strong>
+</div>
+{% endif %}
+
+<!--Navigation bar-->
+<div>
+    <ul class="nav nav-pills justify-content-end">
+        <li class="nav-item">
+            <a class="nav-link active" href=""><h5>Home</h5></a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="http://localhost:5000/monitor_manager"><h5>Monitor</h5></a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="http://localhost:5000"><h5>Log Out</h5></a>
+        </li>
+    </ul>
+</div>
+
+<div id="profile">
+    <h2>Patient Table</h2>
+    <div id="table">
+        <table class="table table-hover" style="width: 95%;">
+            <thead>
+                <tr>
+                    <th style="width: 8vw;"></th>
+                    <th style="text-align: center;">Name</th>
+                    <th style="text-align: center;">Surname</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for patient in patients %}
+                <tr>
+                    <td style="width: 1vw;">
+                        <div class="custom-control custom-switch">
+                            {% if selected != None %}
+                            {% set added = namespace(number = 0) %}
+                                {% for ids in selected %}
+                                    {% if ids == patient['Patient_ID'] and added.number == 0 %}
+                                        <input id='{{ patient.Patient_ID }}' class="custom-control-input" type="checkbox" value="on" onchange="toggle('{{ patient.Patient_ID }}', '{{ patient.Name }}', '{{ patient.Surname }}')" checked>
+                                        <label id='{{ patient.Name }}' class="custom-control-label" for="{{ patient.Patient_ID }}">Remove</label>
+                                        {% set added.number = 1 %}
+                                    {% endif %}
+                                {% endfor %}
+                                {% if added.number != 1 %}
+                                    <input id='{{ patient.Patient_ID }}' class="custom-control-input" type="checkbox" value="off" onchange="toggle('{{ patient.Patient_ID }}', '{{ patient.Name }}', '{{ patient.Surname }}')" >
+                                    <label id='{{ patient.Name }}' class="custom-control-label" for="{{ patient.Patient_ID }}">Add</label>
+                                {% endif %}
+                            {% else %}
+                                <input id='{{ patient.Patient_ID }}' class="custom-control-input" type="checkbox" value="off" onchange="toggle('{{ patient.Patient_ID }}', '{{ patient.Name }}', '{{ patient.Surname }}')" >
+                                <label id='{{ patient.Name }}' class="custom-control-label" for="{{ patient.Patient_ID }}">Add</label>
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td style="text-align: center;">{{ patient['Name'] }}</td>
+                    <td style="text-align: center;">{{ patient['Surname'] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <button class="btn btn-primary" onclick = "previous('home/', 27)">Previous List</button>
+        <button class="btn btn-primary" onclick = "next('home/', 27)">Next List</button>
+    </div>
+</div>
+
+<!--Refreshing the page-->
+<div id="freq_input">
+    <div class="form-group form-row align-items-center col-auto">
+        <label for="frequency"><b>Frequency</b></label>
+        <input type="text" class="form-control" id="frequency" value="" placeholder="Frequency (in seconds)" required>
+        <div style="margin-top: 1vh;">
+            <b>Body Vitals</b>
+            <div class="custom-control custom-switch">
+                <input type="checkbox" id="cholesterol" class="custom-control-input" value="CHOLESTEROL">
+                <label for="cholesterol" class="custom-control-label">Cholesterol</label>
+            </div>
+            <div class="custom-control custom-switch">
+                <input type="checkbox" id="blood_pressure" class="custom-control-input" value="BLOOD_PRESSURE">
+                <label for="blood_pressure" class="custom-control-label">Blood Pressure</label>
+            </div>
+            <label for="x"><b>Limit for Systolic Blood Pressure</b></label>
+            <input type="text" class="form-control" id="systolic" value="" placeholder="Limit for Systolic Blood Pressure" required>
+            <label for="y"><b>Limit for Diastolic Blood Pressure</b></label>
+            <input type="text" class="form-control" id="diastolic" value="" placeholder="Limit for Diastolic Blood Pressure" required>
+            <div style="margin-top: 1vh;">
+                <button class="btn btn-primary" onclick = "create_manager('{{ num }}')">Create Monitor Manager</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="../static/basic.js"></script>
+<script type="text/javascript" src="../static/home.js"></script>
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>

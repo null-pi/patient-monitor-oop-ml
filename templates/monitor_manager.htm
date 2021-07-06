@@ -1,0 +1,175 @@
+<!--monitor_manager.htm creates the front end of the monitor manager-->
+<!--The health practitioner can search for any patient by using the search bar-->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+<link rel="stylesheet" href="../static/basic.css">
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+<!--Navigation bar-->
+<div>
+    <ul class="nav nav-pills justify-content-end">
+        <li class="nav-item">
+            <a class="nav-link" href="http://localhost:5000/home"><h5>Home</h5></a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link active" href=""><h5>Monitor</h5></a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="http://localhost:5000"><h5>Log Out</h5></a>
+        </li>
+    </ul>
+</div>
+
+<body onload="autoRefresh('{{ frequency }}', 'monitor_manager')">
+    <div id="profile">
+        <div>
+            <label for="delete"><h2>Monitor</h2></label>
+            <button class="btn btn-danger" id="delete" style="margin-left: 1vw;" onclick="deleteMonitor()">Delete Monitor</button>
+        </div>
+        <div>
+            <button class="btn btn-danger" style="margin-left: 1vw;" onclick="table()">Patient with High Systolic Blood Pressure</button>
+        </div>
+        <p id="high" style="display: none;">{{ patients|tojson }}</p>
+        <div class="form-row form-group col-auto" style="margin: 2vh;">
+            <div>
+                <input id="search" class="form-control mr-sm-2" type="search" placeholder="Search">
+                {% if show == 'no' %}
+                    <small style="color: red;">Invalid Patient Name or ID</small>
+                {% endif %}
+            </div>
+            <div>
+                <button class="btn btn-outline-primary my-2 my-sm-0" onclick="search()">Search</button>
+            </div>
+        </div>
+        <div id="table">
+            <table class="table table-hover" style="width: 95%;">
+                <thead>
+                    <tr>
+                        <th style="width: 8vw;"></th>
+                        <th style="text-align: center;">Name</th>
+                        {% if cholesterol == 1 %}
+                            <th style="text-align: center;">Total Cholesterol</th>
+                            <th style="text-align: center;">Time</th>
+                        {% endif %}
+                        {% if blood_pressure == 1 %}
+                            <th style="text-align: center;">Systolic Blood Pressure</th>
+                            <th style="text-align: center;">Diastolic Blood Pressure</th>
+                            <th style="text-align: center;">Time</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    <!--Prints table of patients selected for monitoring-->
+                    {% for patient in patients %}
+                    <tr onclick="print('{{ patient.ID }}')">
+                        <td style="width: 1vw;">
+                            <button id='{{ patient.ID }}' class="btn btn-danger" type="button" onclick="eradicate('{{ patient.ID }}', '{{ patient.Name }}', '{{ patient.Surname }}')" >Remove</button>
+                        </td>
+                        <td style="text-align: center;">{{ patient['Name'] }}</td>
+                        {% if cholesterol == 1 %}
+                            {% if patient['Chol_Value'] != 'unavailable' and patient['Chol_Value'] >= patient['Chol_Avg'] %}
+                                <td style="text-align: center; color: red;">{{ patient['Chol_Value']|string + ' ' + patient['Chol_Unit'] }}</td>
+                                <td style="text-align: center; color: red;">{{ patient['Chol_Time'] }}</td>
+                            {% else %}
+                                <td style="text-align: center;">{{ patient['Chol_Value']|string + ' ' + patient['Chol_Unit'] }}</td>
+                                <td style="text-align: center;">{{ patient['Chol_Time'] }}</td>
+                            {% endif %}
+                        {% endif %}
+                        {% if blood_pressure == 1 %}
+                            {% if patient['Systolic'] != 'unavailable' and patient['Systolic'] >= systolic %}
+                                <td style="text-align: center; color: purple">{{ patient['Systolic']|string + ' ' + patient['Pressure_Unit'] }}</td>
+                            {% else %}
+                                <td style="text-align: center;">{{ patient['Systolic']|string + ' ' + patient['Pressure_Unit'] }}</td>
+                            {% endif %}
+
+                            {% if patient['Diastolic'] != 'unavailable' and patient['Diastolic'] >= diastolic %}
+                                <td style="text-align: center; color: purple">{{ patient['Diastolic']|string + ' ' + patient['Pressure_Unit'] }}</td>
+                            {% else %}
+                                <td style="text-align: center;">{{ patient['Diastolic']|string + ' ' + patient['Pressure_Unit'] }}</td>
+                            {% endif %}
+                            <td style="text-align: center;">{{ patient['Pressure_Time'] }}</td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div id='chol_chart'></div>
+    </div>
+
+    <!--Refreshing the page-->
+    <div id="freq_input">
+        <div class="form-group form-row align-items-center col-auto">
+            <label for="frequency"><b>Frequency</b></label>
+            <input type="text" class="form-control" id="frequency" value="{{ frequency }}" placeholder="Frequency (in seconds)" required>
+            <div style="margin-top: 1vh;">
+                <b>Body Vitals</b>
+                {% if cholesterol == 1 %}
+                    <div class="custom-control custom-switch">
+                        <input type="checkbox" id="cholesterol" class="custom-control-input" value="CHOLESTEROL" checked>
+                        <label for="cholesterol" class="custom-control-label">Cholesterol</label>
+                    </div>
+                {% elif cholesterol == 0 %}
+                    <div class="custom-control custom-switch">
+                        <input type="checkbox" id="cholesterol" class="custom-control-input" value="CHOLESTEROL">
+                        <label for="cholesterol" class="custom-control-label">Cholesterol</label>
+                    </div>
+                {% endif %}
+                {% if blood_pressure == 1 %}
+                    <div class="custom-control custom-switch">
+                        <input type="checkbox" id="blood_pressure" class="custom-control-input" value="BLOOD_PRESSURE" checked>
+                        <label for="blood_pressure" class="custom-control-label">Blood Pressure</label>
+                    </div>
+                {% elif blood_pressure == 0 %}
+                    <div class="custom-control custom-switch">
+                        <input type="checkbox" id="blood_pressure" class="custom-control-input" value="BLOOD_PRESSURE">
+                        <label for="blood_pressure" class="custom-control-label">Blood Pressure</label>
+                    </div>
+                {% endif %}
+                <label for="systolic"><b>Limit for Systolic Blood Pressure</b></label>
+                <input type="text" class="form-control" id="systolic" value={{ systolic }} placeholder="Limit for Systolic Blood Pressure" required>
+                <label for="diastolic"><b>Limit for Diastolic Blood Pressure</b></label>
+                <input type="text" class="form-control" id="diastolic" value={{ diastolic }} placeholder="Limit for Diastolic Blood Pressure" required>
+
+                <div style="margin-top: 1vh;">
+                    <button class="btn btn-primary" onclick = "update()">Update</button>
+                    <button class="btn btn-primary" onclick="topFunction()" id="myBtn" title="Go to top">Top</button>
+                </div>
+                
+                <script>
+                    //Get the button
+                    var mybutton = document.getElementById("myBtn");
+
+                    // When the user scrolls down 20px from the top of the document, show the button
+                    window.onscroll = function() {scrollFunction()};
+
+                    function scrollFunction() {
+                      if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+                        mybutton.style.display = "block";
+                      } else {
+                        mybutton.style.display = "none";
+                      }
+                    }
+
+                    // When the user clicks on the button, scroll to the top of the document
+                    function topFunction() {
+                      document.body.scrollTop = 0;
+                      document.documentElement.scrollTop = 0;
+                    }
+
+                    google.charts.load('current', {packages: ['corechart']});
+                    google.charts.setOnLoadCallback(function(){
+                        column_chart('{{ patients|tojson }}', '{{ cholesterol }}')
+                    });
+
+                </script>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+<script type="text/javascript" src="../static/basic.js"></script>
+<script type="text/javascript" src="../static/monitor_manager.js"></script>
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>

@@ -1,0 +1,23 @@
+<!--login.htm makes the front end of the login page of the website-->
+<!--The page takes in the numerical value of ID of the health practitioner and opens their patient list-->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+<link rel="stylesheet" href="../static/basic.css">
+
+<div id="center_form">
+    <form action='home' method='post'>
+        <div class="form-row align-items-center form-group col-auto">
+            <label for="patient"><h2>Enter Practitioner Identifier:</h2></label>
+            <input id="patient" class="form-control" placeholder="Practitioner Identifier" type="text" name="login" value="" required>
+            {% if show == 'yes' %}
+                <small style="color: red;">ID should be Practitioner Identifier</small>
+            {% endif %}
+        </div>
+        <div class="text-center">
+            <button class="btn btn-primary" type="submit">Get Data</button>
+        </div>
+    </form>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>

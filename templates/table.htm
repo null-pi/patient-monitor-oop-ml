@@ -1,0 +1,100 @@
+<!--monitor_manager.htm creates the front end of the monitor manager-->
+<!--The health practitioner can search for any patient by using the search bar-->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+<link rel="stylesheet" href="../static/basic.css">
+
+<!--Navigation bar-->
+<div>
+    <ul class="nav nav-pills justify-content-end">
+        <li class="nav-item">
+            <a class="nav-link" href="http://localhost:5000/home"><h5>Home</h5></a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="http://localhost:5000/monitor_manager"><h5>Monitor</h5></a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="http://localhost:5000"><h5>Log Out</h5></a>
+        </li>
+    </ul>
+</div>
+
+<body onload="autoRefresh('{{ frequency }}', 'table')">
+    <div id="profile">
+        <div id="table" class="table-responsive">
+            <table class="table table-hover" style="width: 90%;">
+                <thead>
+                    <tr>
+                        <th style="text-align: center;" rowspan="2">Name</th>
+                        {% for value in patients[0]['Value'] %}
+                            <th style="text-align: center;" colspan="2">Observation {{ loop.index }}</th>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        {% for value in patients[0]['Value'] %}
+                            <th style="text-align: center;">Systolic Pressure</th>
+                            <th style="text-align: center;">Time</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    <!--Prints table of patients selected for monitoring-->
+                    {% for patient in patients %}
+                    <tr>
+                        <td style="text-align: center;">{{ patient['Name'] }}</td>
+                        {% for value in patient['Value'] %}
+                            <td style="text-align: center;">{{ value['Systolic']|string + ' ' + value['Unit'] }}</td>
+                            <td style="text-align: center;">{{ value['Time'] }}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!--Refreshing the page-->
+    <div id="freq_input">
+        <div class="form-group form-row align-items-center col-auto">
+            <label for="frequency"><b>Frequency</b></label>
+            <input type="text" class="form-control" id="frequency" value="{{ frequency }}" placeholder="Frequency (in seconds)" required>
+            <div style="margin-top: 1vh;">
+                <div style="margin-top: 1vh;">
+                    <button class="btn btn-primary" onclick="update()">Update</button>
+                    <button class="btn btn-primary" onclick="topFunction()" id="myBtn" title="Go to top">Top</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id = "myCanvas" style="width: 50%"></div>
+
+    <script>
+        //Get the button
+        var mybutton = document.getElementById("myBtn");
+
+        // When the user scrolls down 20px from the top of the document, show the button
+        window.onscroll = function() {scrollFunction()};
+
+        function scrollFunction() {
+          if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+            mybutton.style.display = "block";
+          } else {
+            mybutton.style.display = "none";
+          }
+        }
+
+        // When the user clicks on the button, scroll to the top of the document
+        function topFunction() {
+          document.body.scrollTop = 0;
+          document.documentElement.scrollTop = 0;
+        }
+    </script>
+
+</body>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+<script type="text/javascript" src="../static/table.js"></script>
+<script type="text/javascript" src="../static/basic.js"></script>
